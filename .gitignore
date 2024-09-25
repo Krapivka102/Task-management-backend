@@ -1,0 +1,7 @@
+.idea
+/venv
+/node_modules
+*.sqlite3
+__pycache__
+media
+/logs
