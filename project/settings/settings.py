@@ -1,7 +1,8 @@
 import os
+import locale
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = 'django-insecure-%8#q-3t*4&=r$^3ngjiezrlnc+dalz_(@9um0$6f@r#@4o)*p-'
 
@@ -76,33 +77,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '10/minute',
-        'person': '25/minute',
-    },
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S%Z',
-    'DATETIME_INPUT_FORMAT': '%Y-%m-%d %H:%M:%S%Z',
-    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'EXCEPTION_HANDLER': 'drf_standardized_errors.handler.exception_handler',
-}
-
-
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = os.getenv('TIME_ZONE', 'Asia/Yekaterinburg')
+
+locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
 USE_I18N = True
 
@@ -119,3 +98,8 @@ LOGOUT_URL = '/backend/admin/logout/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
+
+from project.settings.rest_framework import *  # noqa: E402, F403
+
