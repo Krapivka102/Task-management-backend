@@ -1,7 +1,9 @@
 .idea
 /venv
+/.venv/
 /node_modules
 *.sqlite3
 __pycache__
 media
 /logs
+/.python-version
