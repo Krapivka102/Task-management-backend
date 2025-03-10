@@ -23,10 +23,10 @@ if DATABASE_ENGINE == "django.db.backends.postgresql":
         DATABASES = {
             "default": {
                 "ENGINE": DATABASE_ENGINE,
-                "NAME": env("POSTGRES_DB", default="rts_db_pg"),
+                "NAME": env("POSTGRES_DB", default="web_db_pg"),
                 "USER": env("POSTGRES_USER", default="postgres"),
                 "PASSWORD": env("POSTGRES_PASSWORD", default="postgres"),
-                "HOST": env("POSTGRES_HOST", default="rts_db_pg"),
+                "HOST": env("POSTGRES_HOST", default="web_db_pg"),
                 "PORT": 5432,
             }
         }
