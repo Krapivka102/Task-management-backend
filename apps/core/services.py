@@ -8,7 +8,7 @@ User = get_user_model()
 
 class UserService:
     @staticmethod
-    def authenticate(username: str, password: str) -> User | str:
+    def authenticate(username: str, password: str) -> tuple[User, Token]:
         user = authenticate(username=username, password=password)
         if user is None:
             raise AuthorizeError()
