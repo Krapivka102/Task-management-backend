@@ -50,9 +50,9 @@ class ProjectViewSet(ModelViewSet):
     serializer_class = serializers.ProjectSerializer
 
     def get_permissions(self):
-        if self.action in ["create", "update", "partial_update", "destroy"]:
+        if self.action in ["update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsMaintainer()]
-        elif self.action in ["list", "retrieve"]:
+        elif self.action in ["list", "retrieve", "create"]:
             return [IsAuthenticated()]
         return [IsAuthenticated()]
 
