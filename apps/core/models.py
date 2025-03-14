@@ -31,7 +31,10 @@ class Group(BaseModel):
         verbose_name="Создан пользователем",
     )
     members = models.ManyToManyField(
-        User, related_name="group_memberships", verbose_name="Участники группы", blank=True
+        User,
+        related_name="group_memberships",
+        verbose_name="Участники группы",
+        blank=True,
     )
 
     class Meta:

@@ -32,6 +32,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
+    "rest_framework.authtoken",
+    "drf_standardized_errors",
 ]
 
 INSTALLED_APPS = [

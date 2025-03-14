@@ -6,95 +6,287 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0001_initial'),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Group',
+            name="Group",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255, verbose_name='Название группы')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_groups', to=settings.AUTH_USER_MODEL, verbose_name='Создан пользователем')),
-                ('members', models.ManyToManyField(blank=True, related_name='group_memberships', to=settings.AUTH_USER_MODEL, verbose_name='Участники группы')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.CharField(max_length=255, verbose_name="Название группы"),
+                ),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="created_groups",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Создан пользователем",
+                    ),
+                ),
+                (
+                    "members",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="group_memberships",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Участники группы",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Группа',
-                'verbose_name_plural': 'Группы',
+                "verbose_name": "Группа",
+                "verbose_name_plural": "Группы",
             },
         ),
         migrations.CreateModel(
-            name='Project',
+            name="Project",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255, verbose_name='Название проекта')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Активен')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_projects', to=settings.AUTH_USER_MODEL, verbose_name='Создан пользователем')),
-                ('group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='core.group', verbose_name='Группа')),
-                ('members', models.ManyToManyField(blank=True, related_name='projects', to=settings.AUTH_USER_MODEL, verbose_name='Участники проекта')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.CharField(max_length=255, verbose_name="Название проекта"),
+                ),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
+                (
+                    "is_active",
+                    models.BooleanField(default=True, verbose_name="Активен"),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="created_projects",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Создан пользователем",
+                    ),
+                ),
+                (
+                    "group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="projects",
+                        to="core.group",
+                        verbose_name="Группа",
+                    ),
+                ),
+                (
+                    "members",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="projects",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Участники проекта",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Проект',
-                'verbose_name_plural': 'Проекты',
+                "verbose_name": "Проект",
+                "verbose_name_plural": "Проекты",
             },
         ),
         migrations.CreateModel(
-            name='Task',
+            name="Task",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('title', models.CharField(max_length=255, verbose_name='Заголовок')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
-                ('priority', models.CharField(choices=[('open', 'Низкий'), ('in_progress', 'Средний'), ('closed', 'Высокий')], default='in_progress', max_length=255, verbose_name='Приоритет')),
-                ('status', models.CharField(choices=[('open', 'Открыта'), ('in_progress', 'В процессе'), ('closed', 'Завершена')], default='open', max_length=255, verbose_name='Статус')),
-                ('due_date', models.DateTimeField(blank=True, null=True, verbose_name='Срок выполнения')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_tasks', to=settings.AUTH_USER_MODEL, verbose_name='Назначен на')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_tasks', to=settings.AUTH_USER_MODEL, verbose_name='Создан пользователем')),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='core.project', verbose_name='Проект')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("title", models.CharField(max_length=255, verbose_name="Заголовок")),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
+                (
+                    "priority",
+                    models.CharField(
+                        choices=[
+                            ("open", "Низкий"),
+                            ("in_progress", "Средний"),
+                            ("closed", "Высокий"),
+                        ],
+                        default="in_progress",
+                        max_length=255,
+                        verbose_name="Приоритет",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("open", "Открыта"),
+                            ("in_progress", "В процессе"),
+                            ("closed", "Завершена"),
+                        ],
+                        default="open",
+                        max_length=255,
+                        verbose_name="Статус",
+                    ),
+                ),
+                (
+                    "due_date",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="Срок выполнения"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assigned_tasks",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Назначен на",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="created_tasks",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Создан пользователем",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks",
+                        to="core.project",
+                        verbose_name="Проект",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Задача',
-                'verbose_name_plural': 'Задачи',
+                "verbose_name": "Задача",
+                "verbose_name_plural": "Задачи",
             },
         ),
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('text', models.TextField(verbose_name='Текст комментария')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='core.task', verbose_name='Задача')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("text", models.TextField(verbose_name="Текст комментария")),
+                (
+                    "author",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comments",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Автор",
+                    ),
+                ),
+                (
+                    "task",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comments",
+                        to="core.task",
+                        verbose_name="Задача",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Комментарий',
-                'verbose_name_plural': 'Комментарии',
+                "verbose_name": "Комментарий",
+                "verbose_name_plural": "Комментарии",
             },
         ),
         migrations.CreateModel(
-            name='Attachment',
+            name="Attachment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('file', models.FileField(upload_to='attachments/', verbose_name='Файл')),
-                ('uploaded_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='uploaded_attachments', to=settings.AUTH_USER_MODEL, verbose_name='Загружен пользователем')),
-                ('comment', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='core.comment', verbose_name='Комментарий')),
-                ('task', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='core.task', verbose_name='Задача')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "file",
+                    models.FileField(upload_to="attachments/", verbose_name="Файл"),
+                ),
+                (
+                    "uploaded_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="uploaded_attachments",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Загружен пользователем",
+                    ),
+                ),
+                (
+                    "comment",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="attachments",
+                        to="core.comment",
+                        verbose_name="Комментарий",
+                    ),
+                ),
+                (
+                    "task",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="attachments",
+                        to="core.task",
+                        verbose_name="Задача",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Вложение',
-                'verbose_name_plural': 'Вложения',
+                "verbose_name": "Вложение",
+                "verbose_name_plural": "Вложения",
             },
         ),
     ]
