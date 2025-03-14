@@ -5,7 +5,8 @@
 *.sqlite3
 __pycache__
 media
-/logs
+logs/*
+!logs/.gitkeep
 /.python-version
 .env
 /.env
