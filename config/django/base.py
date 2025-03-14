@@ -26,6 +26,7 @@ ALLOWED_HOSTS = env.list(
 LOCAL_APPS = [
     "apps.core.apps.CoreConfig",
     "apps.common.apps.CommonConfig",
+    "apps.web_socket_fastapi.apps.WebSocketFastapiConfig",
 ]
 
 THIRD_PARTY_APPS = [
@@ -104,8 +105,8 @@ USE_TZ = True
 
 locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
 
-STATIC_URL = "/backend/static/"
-MEDIA_URL = "/backend/media/"
+STATIC_URL = "/api/static/"
+MEDIA_URL = "/api/media/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
