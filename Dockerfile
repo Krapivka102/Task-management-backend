@@ -56,9 +56,8 @@ EXPOSE 80
 # Устанавливаем переменную окружения для использования виртуальной среды
 ENV PATH="/opt/app/.venv/bin:$PATH"
 
-VOLUME /data/
-VOLUME /conf/
 VOLUME /static/
+VOLUME /media/
 VOLUME /logs/
 
 COPY entrypoint.sh /entrypoint.sh

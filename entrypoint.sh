@@ -2,6 +2,10 @@
 
 echo "Starting entrypoint script..."
 
+rm -rf static && ln -s /static static
+rm -rf media && ln -s /media media
+rm -rf logs && ln -s /logs logs
+
 # Ждем, пока PostgreSQL станет доступен (если используется)
 if [ "$ENGINE" = "django.db.backends.postgresql" ]; then
     echo "Waiting for PostgreSQL to become available..."
@@ -15,12 +19,6 @@ fi
 # Применяем миграции
 echo "Applying database migrations..."
 python manage.py migrate
-
-mkdir -p /static /logs
-
-# Создаём символические ссылки (если их нет)
-[ ! -L static ] && rm -rf static && ln -s /static static
-[ ! -L logs ] && rm -rf logs && ln -s /logs logs
 
 echo "Starting Supervisor..."
 python manage.py runserver 0.0.0.0:80
