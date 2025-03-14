@@ -9,4 +9,5 @@ app_name = "core"
 urlpatterns = [
     path("", RedirectView.as_view(url="/api/docs/")),
     path("auth/", views.Auth.as_view(), name="auth"),
+    path("logout/", views.Logout.as_view(), name="logout"),
 ]

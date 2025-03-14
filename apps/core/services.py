@@ -8,7 +8,7 @@ User = get_user_model()
 
 class UserService:
     @staticmethod
-    def authenticate(username: str, password: str) -> User:
+    def authenticate(username: str, password: str) -> User | str:
         user = authenticate(username=username, password=password)
         if user is None:
             raise AuthorizeError()
@@ -16,5 +16,5 @@ class UserService:
         if not user.is_active:
             raise UserDeletedError()
 
-        _, _ = Token.objects.get_or_create(user=user)
-        return user
+        token, _ = Token.objects.get_or_create(user=user)
+        return user, token
