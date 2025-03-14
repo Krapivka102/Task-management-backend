@@ -113,7 +113,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 from config.settings.rest_framework import *  # noqa: E402, F403
 from config.settings.database import *  # noqa: E402, F403
-from config.settings.redis import *  # noqa: E402, F403
+from config.settings.redis import REDIS_PORT, REDIS_HOST  # noqa: E402, F403
 
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
 CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
