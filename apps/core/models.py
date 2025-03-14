@@ -165,3 +165,41 @@ class Attachment(BaseModel):
 
     def __str__(self):
         return f"Вложение к {self.task or self.comment}"
+
+
+class Membership(BaseModel):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="memberships",
+        verbose_name="Пользователь",
+    )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="memberships",
+        verbose_name="Проект",
+        null=True,
+        blank=True,
+    )
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name="memberships",
+        verbose_name="Группа",
+        null=True,
+        blank=True,
+    )
+    role = models.CharField(
+        "Роль",
+        max_length=20,
+        choices=consts.MembershipRole.CHOICES,
+        default=consts.MembershipRole.VIEWER,
+    )
+
+    class Meta:
+        verbose_name = "Членство"
+        verbose_name_plural = "Членства"
+
+    def __str__(self):
+        return f"{self.user.fullname} - {self.get_role_display()}"

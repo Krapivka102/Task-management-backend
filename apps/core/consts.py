@@ -12,3 +12,15 @@ class TaskPriority:
     HIGH = "closed"
 
     CHOICES = ((LOW, "Низкий"), (MEDIUM, "Средний"), (HIGH, "Высокий"))
+
+
+class MembershipRole:
+    VIEWER = "viewer"
+    DEVELOPER = "developer"
+    MAINTAINER = "maintainer"
+
+    CHOICES = (
+        (VIEWER, "зритель"),
+        (DEVELOPER, "разработчик"),
+        (MAINTAINER, "ответственный"),
+    )

@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.viewsets import ModelViewSet
 
-from apps.core import serializers
+from apps.core import serializers, models, consts
+from apps.core.permissions import IsMaintainer
 from apps.core.services import UserService
 
 
@@ -42,3 +44,25 @@ class Logout(APIView):
             pass
 
         return Response()
+
+
+class ProjectViewSet(ModelViewSet):
+    serializer_class = serializers.ProjectSerializer
+
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsMaintainer()]
+        elif self.action in ["list", "retrieve"]:
+            return [IsAuthenticated()]
+        return [IsAuthenticated()]
+
+    def perform_create(self, serializer):
+        project = serializer.save(created_by=self.request.user)
+        models.Membership.objects.create(
+            user=self.request.user,
+            project=project,
+            role=consts.MembershipRole.MAINTAINER,
+        )
+
+    def get_queryset(self):
+        return models.Project.objects.filter(memberships__user=self.request.user)
