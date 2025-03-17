@@ -29,7 +29,12 @@ class Project(BaseModel):
         related_name='created_projects',
         verbose_name='Создан пользователем',
     )
-    members = models.ManyToManyField(User, related_name='projects', verbose_name='Участники проекта', blank=True)
+    members = models.ManyToManyField(
+        User,
+        through='Membership',
+        related_name='projects',
+        verbose_name='Участники проекта',
+    )
     is_active = models.BooleanField('Активен', default=True)
     is_private = models.BooleanField('Приватный проект', default=False)
 
@@ -168,3 +173,9 @@ class Membership(BaseModel):
 
     def __str__(self) -> str:
         return f'{self.user.fullname} - {self.get_role_display()}'
+
+    @staticmethod
+    def get_user_role(user: User, project: Project) -> str:
+        """Получаем роль пользователя в проекте"""
+        membership = Membership.objects.filter(user=user, project=project).first()
+        return membership.role if membership else None

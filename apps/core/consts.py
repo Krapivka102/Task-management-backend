@@ -7,9 +7,9 @@ class TaskStatus:
 
 
 class TaskPriority:
-    LOW = 'open'
-    MEDIUM = 'in_progress'
-    HIGH = 'closed'
+    LOW = 'low'
+    MEDIUM = 'medium'
+    HIGH = 'high'
 
     CHOICES = ((LOW, 'Низкий'), (MEDIUM, 'Средний'), (HIGH, 'Высокий'))
 

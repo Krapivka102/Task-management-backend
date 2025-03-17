@@ -41,6 +41,10 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), write_only=True)
+    assigned_to_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.User.objects.all(), write_only=True, required=False, allow_null=True
+    )
     assigned_to = UserSerializer(read_only=True)
     created_by = UserSerializer(read_only=True)
 
@@ -55,6 +59,8 @@ class TaskSerializer(serializers.ModelSerializer):
             'status',
             'due_date',
             'created_by',
+            'project_id',
+            'assigned_to_id',
         )
 
 

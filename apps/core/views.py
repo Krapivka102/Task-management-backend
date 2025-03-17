@@ -5,13 +5,14 @@ from django.db import transaction
 from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.core import consts, filters, models, serializers
-from apps.core.permissions import IsMaintainer, IsProjectMember
+from apps.core.permissions import IsMaintainer, IsProjectMember, TaskPermission
 from apps.core.services import UserService
 
 
@@ -74,4 +75,33 @@ class ProjectViewSet(ModelViewSet):
             models.Project.objects.filter(memberships__user=self.request.user)
             .select_related('created_by')
             .prefetch_related('members')
+        )
+
+
+class TaskViewSet(ModelViewSet):
+    serializer_class = serializers.TaskSerializer
+    permission_classes = [IsAuthenticated, TaskPermission]
+
+    def get_queryset(self) -> QuerySet:
+        return models.Task.objects.filter(project__memberships__user=self.request.user).select_related(
+            'project', 'assigned_to'
+        )
+
+    def perform_create(self, serializer: serializers.TaskSerializer) -> None:
+        project_id = self.request.data.get('project_id')
+        assigned_to_id = self.request.data.get('assigned_to_id')
+
+        project = models.Project.objects.filter(id=project_id).first()
+        if not project:
+            raise NotFound('Такого проекта не существует')
+
+        user = models.User.objects.filter(id=assigned_to_id).first()
+        if not user:
+            raise NotFound('Такого юзера не существует')
+
+        serializer.save(
+            assigned_to=self.request.user,
+            project_id=project.id,
+            assigned_to_id=user.id,
+            created_by_id=self.request.user.id,
         )
