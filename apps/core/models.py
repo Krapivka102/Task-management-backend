@@ -9,6 +9,7 @@ class User(BaseModel, AbstractUser):
     patronymic = models.CharField("Отчество", max_length=255, blank=True)
     fullname = models.CharField("ФИО", max_length=255, blank=True)
     is_system = models.BooleanField("Системный пользователь", default=False)
+    avatar = models.ImageField("Аватар", upload_to="avatars/", null=True, blank=True)
 
     class Meta:
         verbose_name = "Пользователь"
@@ -21,39 +22,7 @@ class User(BaseModel, AbstractUser):
         super().save(*args, **kwargs)
 
 
-class Group(BaseModel):
-    name = models.CharField("Название группы", max_length=255)
-    description = models.TextField("Описание", blank=True)
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="created_groups",
-        verbose_name="Создан пользователем",
-    )
-    members = models.ManyToManyField(
-        User,
-        related_name="group_memberships",
-        verbose_name="Участники группы",
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = "Группа"
-        verbose_name_plural = "Группы"
-
-    def __str__(self):
-        return self.name
-
-
 class Project(BaseModel):
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name="projects",
-        verbose_name="Группа",
-        null=True,
-        blank=True,
-    )
     name = models.CharField("Название проекта", max_length=255)
     description = models.TextField("Описание", blank=True)
     created_by = models.ForeignKey(
@@ -66,10 +35,26 @@ class Project(BaseModel):
         User, related_name="projects", verbose_name="Участники проекта", blank=True
     )
     is_active = models.BooleanField("Активен", default=True)
+    is_private = models.BooleanField("Приватный проект", default=False)
 
     class Meta:
         verbose_name = "Проект"
         verbose_name_plural = "Проекты"
+
+    def __str__(self):
+        return self.name
+
+
+class Label(BaseModel):
+    name = models.CharField("Название метки", max_length=50)
+    color = models.CharField("Цвет метки", max_length=20)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="labels", verbose_name="Проект"
+    )
+
+    class Meta:
+        verbose_name = "Метка"
+        verbose_name_plural = "Метки"
 
     def __str__(self):
         return self.name
@@ -179,14 +164,6 @@ class Membership(BaseModel):
         on_delete=models.CASCADE,
         related_name="memberships",
         verbose_name="Проект",
-        null=True,
-        blank=True,
-    )
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name="memberships",
-        verbose_name="Группа",
         null=True,
         blank=True,
     )

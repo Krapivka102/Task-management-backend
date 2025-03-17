@@ -10,16 +10,16 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ("username",)
 
 
-@admin.register(models.Group)
-class GroupAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "created_by")
+@admin.register(models.Label)
+class LabelAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "color", "project")
     search_fields = ("name",)
     list_filter = ("name",)
 
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "group", "created_by", "is_active")
+    list_display = ("id", "name", "created_by", "is_active")
     search_fields = ("name",)
     list_filter = ("name", "is_active")
 
@@ -40,4 +40,10 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(models.Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ("id", "task", "comment", "uploaded_by")
+    search_fields = ("id",)
+
+
+@admin.register(models.Membership)
+class MembershipAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "project", "role")
     search_fields = ("id",)
