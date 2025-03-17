@@ -100,7 +100,6 @@ class TaskViewSet(ModelViewSet):
             raise NotFound('Такого юзера не существует')
 
         serializer.save(
-            assigned_to=self.request.user,
             project_id=project.id,
             assigned_to_id=user.id,
             created_by_id=self.request.user.id,
