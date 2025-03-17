@@ -5,45 +5,45 @@ from apps.core import models
 
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("id", "username")
-    search_fields = ("username",)
-    list_filter = ("username",)
+    list_display = ('id', 'username')
+    search_fields = ('username',)
+    list_filter = ('username',)
 
 
 @admin.register(models.Label)
 class LabelAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "color", "project")
-    search_fields = ("name",)
-    list_filter = ("name",)
+    list_display = ('id', 'name', 'color', 'project')
+    search_fields = ('name',)
+    list_filter = ('name',)
 
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "created_by", "is_active")
-    search_fields = ("name",)
-    list_filter = ("name", "is_active")
+    list_display = ('id', 'name', 'created_by', 'is_active')
+    search_fields = ('name',)
+    list_filter = ('name', 'is_active')
 
 
 @admin.register(models.Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "project", "created_by", "assigned_to", "status")
-    search_fields = ("title",)
-    list_filter = ("title",)
+    list_display = ('id', 'title', 'project', 'created_by', 'assigned_to', 'status')
+    search_fields = ('title',)
+    list_filter = ('title',)
 
 
 @admin.register(models.Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("id", "task", "author")
-    search_fields = ("id",)
+    list_display = ('id', 'task', 'author')
+    search_fields = ('id',)
 
 
 @admin.register(models.Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    list_display = ("id", "task", "comment", "uploaded_by")
-    search_fields = ("id",)
+    list_display = ('id', 'task', 'comment', 'uploaded_by')
+    search_fields = ('id',)
 
 
 @admin.register(models.Membership)
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "project", "role")
-    search_fields = ("id",)
+    list_display = ('id', 'user', 'project', 'role')
+    search_fields = ('id',)

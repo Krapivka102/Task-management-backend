@@ -1,7 +1,7 @@
-from django.contrib.auth import get_user_model, authenticate
-from apps.core.custom_exceptions import AuthorizeError, UserDeletedError
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework.authtoken.models import Token
 
+from apps.core.custom_exceptions import AuthorizeError, UserDeletedError
 
 User = get_user_model()
 

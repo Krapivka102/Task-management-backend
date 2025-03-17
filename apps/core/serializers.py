@@ -7,12 +7,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = (
-            "username",
-            "first_name",
-            "last_name",
-            "patronymic",
-            "fullname",
-            "email",
+            'username',
+            'first_name',
+            'last_name',
+            'patronymic',
+            'fullname',
+            'email',
         )
 
 
@@ -32,11 +32,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
         fields = (
-            "id",
-            "name",
-            "description",
-            "created_by",
-            "is_active",
+            'id',
+            'name',
+            'description',
+            'created_by',
+            'is_active',
         )
 
 
@@ -47,14 +47,14 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Task
         fields = (
-            "id",
-            "title",
-            "description",
-            "assigned_to",
-            "priority",
-            "status",
-            "due_date",
-            "created_by",
+            'id',
+            'title',
+            'description',
+            'assigned_to',
+            'priority',
+            'status',
+            'due_date',
+            'created_by',
         )
 
 
@@ -64,11 +64,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comment
         fields = (
-            "id",
-            "task",
-            "author",
-            "text",
-            "created_at",
+            'id',
+            'task',
+            'author',
+            'text',
+            'created_at',
         )
 
 
@@ -78,10 +78,10 @@ class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Attachment
         fields = (
-            "id",
-            "task",
-            "comment",
-            "file",
-            "uploaded_by",
-            "created_at",
+            'id',
+            'task',
+            'comment',
+            'file',
+            'uploaded_by',
+            'created_at',
         )
