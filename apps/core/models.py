@@ -11,6 +11,12 @@ class User(BaseModel, AbstractUser):
     is_system = models.BooleanField('Системный пользователь', default=False)
     avatar = models.ImageField('Аватар', upload_to='avatars/', null=True, blank=True)
 
+    phone_number = models.CharField('Номер телефона', max_length=20, blank=True, null=True)
+    birth_date = models.DateField('Дата рождения', blank=True, null=True)
+    company_name = models.CharField('Компания', max_length=255, blank=True)
+    department = models.CharField('Отдел', max_length=255, blank=True)
+    position = models.CharField('Должность', max_length=255, blank=True)
+
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

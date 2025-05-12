@@ -5,16 +5,50 @@ from apps.core import models
 
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username')
-    search_fields = ('username',)
-    list_filter = ('username',)
-
-
-@admin.register(models.Label)
-class LabelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'color', 'project')
-    search_fields = ('name',)
-    list_filter = ('name',)
+    list_display = (
+        'id',
+        'username',
+        'email',
+        'fullname',
+        'phone_number',
+        'company_name',
+        'department',
+        'position',
+        'is_active',
+        'is_system',
+    )
+    search_fields = (
+        'username',
+        'email',
+        'fullname',
+        'phone_number',
+        'company_name',
+        'department',
+        'position',
+    )
+    list_filter = (
+        'is_active',
+        'is_system',
+        'department',
+        'position',
+        'company_name',
+    )
+    readonly_fields = ('fullname',)
+    fields = (
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        'patronymic',
+        'fullname',
+        'avatar',
+        'phone_number',
+        'birth_date',
+        'company_name',
+        'department',
+        'position',
+        'is_active',
+    )
 
 
 @admin.register(models.Project)
@@ -29,18 +63,6 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'project', 'created_by', 'assigned_to', 'status')
     search_fields = ('title',)
     list_filter = ('title',)
-
-
-@admin.register(models.Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'task', 'author')
-    search_fields = ('id',)
-
-
-@admin.register(models.Attachment)
-class AttachmentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'task', 'comment', 'uploaded_by')
-    search_fields = ('id',)
 
 
 @admin.register(models.Membership)

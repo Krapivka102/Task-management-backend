@@ -2,17 +2,17 @@ from contextlib import suppress
 from urllib.request import Request
 
 from django.db import transaction
-from django.db.models import QuerySet
+from django.db.models import Prefetch, QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.core import consts, filters, models, serializers
-from apps.core.permissions import IsMaintainer, IsProjectMember, TaskPermission
+from apps.core.permissions import IsProjectMaintainerOrOwner, IsProjectMember, IsTaskAssignee, IsTaskMaintainerOrOwner
 from apps.core.services import UserService
 
 
@@ -50,16 +50,24 @@ class Logout(APIView):
 
 class ProjectViewSet(ModelViewSet):
     serializer_class = serializers.ProjectSerializer
+    permission_classes = [IsAuthenticated]
     filterset_class = filters.ProjectFilter
+
+    def get_queryset(self) -> QuerySet:
+        return (
+            models.Project.objects.filter(memberships__user=self.request.user)
+            .select_related('created_by')
+            .prefetch_related(
+                Prefetch('memberships', queryset=models.Membership.objects.filter(user=self.request.user))
+            )
+        )
 
     def get_permissions(self) -> list:
         if self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthenticated(), IsMaintainer()]
+            return [IsProjectMaintainerOrOwner()]
         elif self.action in ['list', 'retrieve']:
-            return [IsAuthenticated(), IsProjectMember()]
-        elif self.action == 'create':
-            return [IsAuthenticated()]
-        return [IsAuthenticated()]
+            return [IsProjectMember()]
+        return super().get_permissions()
 
     def perform_create(self, serializer: serializers.ProjectSerializer) -> None:
         with transaction.atomic():
@@ -70,22 +78,24 @@ class ProjectViewSet(ModelViewSet):
                 role=consts.MembershipRole.MAINTAINER,
             )
 
-    def get_queryset(self) -> QuerySet:
-        return (
-            models.Project.objects.filter(memberships__user=self.request.user)
-            .select_related('created_by')
-            .prefetch_related('members')
-        )
-
 
 class TaskViewSet(ModelViewSet):
     serializer_class = serializers.TaskSerializer
-    permission_classes = [IsAuthenticated, TaskPermission]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self) -> QuerySet:
-        return models.Task.objects.filter(project__memberships__user=self.request.user).select_related(
-            'project', 'assigned_to'
+        return (
+            models.Task.objects.filter(project__memberships__user=self.request.user)
+            .select_related('project', 'assigned_to')
+            .prefetch_related('project__memberships')
         )
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [IsTaskMaintainerOrOwner()]
+        elif self.action == 'create':
+            return [IsTaskAssignee()]
+        return super().get_permissions()
 
     def perform_create(self, serializer: serializers.TaskSerializer) -> None:
         project_id = self.request.data.get('project_id')
@@ -93,14 +103,19 @@ class TaskViewSet(ModelViewSet):
 
         project = models.Project.objects.filter(id=project_id).first()
         if not project:
-            raise NotFound('Такого проекта не существует')
+            raise NotFound('Такого проекта не существует.')
 
         user = models.User.objects.filter(id=assigned_to_id).first()
         if not user:
-            raise NotFound('Такого юзера не существует')
+            raise NotFound('Такого юзера не существует.')
 
-        serializer.save(
-            project_id=project.id,
-            assigned_to_id=user.id,
-            created_by_id=self.request.user.id,
-        )
+        membership = models.Membership.objects.filter(user=self.request.user, project=project).first()
+
+        if membership.role == consts.MembershipRole.DEVELOPER and self.request.user.id != assigned_to_id:
+            raise PermissionDenied('Разработчик может назначать задачу только себе.')
+
+        if not membership:
+            raise PermissionDenied('Вы не являетесь участником проекта.')
+
+        with transaction.atomic():
+            serializer.save(created_by=self.request.user)

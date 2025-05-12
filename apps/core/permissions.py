@@ -8,20 +8,6 @@ from rest_framework.views import APIView
 from apps.core import consts, models
 
 
-class IsMaintainer(permissions.BasePermission):
-    """
-    Проверяет, является ли пользователь Maintainer.
-    """
-
-    def has_object_permission(self, request: Request, view: APIView, obj: Type[Model]) -> bool:
-        project = getattr(obj, 'project', obj)
-        return models.Membership.objects.filter(
-            user=request.user,
-            project=project,
-            role=consts.MembershipRole.MAINTAINER,
-        ).exists()
-
-
 class IsProjectMember(permissions.BasePermission):
     """
     Проверяет, является ли пользователь участником проекта.
@@ -35,54 +21,36 @@ class IsProjectMember(permissions.BasePermission):
         ).exists()
 
 
-class IsMaintainerOrDeveloper(permissions.BasePermission):
-    """Проверяет, является ли пользователь Maintainer или Developer проекта."""
-
-    def has_permission(self, request: Request, view: APIView) -> bool:
-        project_id = request.data.get('project_id') or view.kwargs.get('pk')
-        if not project_id:
-            return False
-
-        return models.Membership.objects.filter(
-            user=request.user,
-            project_id=project_id,
-            role__in=[consts.MembershipRole.MAINTAINER, consts.MembershipRole.DEVELOPER],
-        ).exists()
-
-
-class TaskPermission(permissions.BasePermission):
-    """
-    Кастомное разрешение для управления доступом к задачам в проекте.
-    """
-
+class IsProjectMaintainerOrOwner(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: APIView, obj: Type[Model]) -> bool:
-        """Проверяем доступ к конкретной задаче (PUT, PATCH, DELETE)"""
-        user = request.user
-        role = models.Membership.get_user_role(user, obj.project)
-
-        if request.method in permissions.SAFE_METHODS:
+        if request.user == obj.created_by:
             return True
+        membership = obj.memberships.filter(user=request.user, role=consts.MembershipRole.MAINTAINER).exists()
+        return membership
 
-        if role == consts.MembershipRole.DEVELOPER:
-            return obj.created_by == user
 
-        return role == consts.MembershipRole.MAINTAINER
-
-    def has_permission(self, request: Request, view: APIView) -> bool:
-        """Проверяем доступ на уровне списка (POST, GET, LIST)"""
-        if request.method in permissions.SAFE_METHODS:
+class IsTaskMaintainerOrOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj.created_by:
             return True
+        membership = models.Membership.objects.filter(
+            user=request.user, project=obj.project, role=consts.MembershipRole.MAINTAINER
+        ).exists()
+        return membership
 
-        user = request.user
-        project_id = request.data.get('project_id')
 
-        if not project_id:
+class IsTaskAssignee(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        project = obj.project
+        membership = models.Membership.objects.filter(user=request.user, project=project).first()
+
+        if not membership:
             return False
 
-        role = models.Membership.get_user_role(user, project_id)
+        if membership.role == consts.MembershipRole.VIEWER:
+            return False
 
-        if role == consts.MembershipRole.DEVELOPER:
-            assigned_to_id = request.data.get('assigned_to_id')
-            return assigned_to_id is None or int(assigned_to_id) == user.id
+        if membership.role == consts.MembershipRole.DEVELOPER and obj.assigned_to and obj.assigned_to != request.user:
+            return False
 
-        return role == consts.MembershipRole.MAINTAINER
+        return True
